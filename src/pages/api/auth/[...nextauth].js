@@ -1,12 +1,11 @@
 import NextAuth from "next-auth";
-import Provider from "next-auth/providers";
-import GoogleAuthProvider  from 'firebase/auth';
-
+//import Provider from "next-auth/providers";
+import GoogleProvider from "next-auth/providers/google"
 
 export default NextAuth({
   // Configure one or more authentication providers
   providers: [
-    Provider.Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
     }),

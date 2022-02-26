@@ -4,14 +4,14 @@ import {
     MenuIcon,
     ShoppingCartIcon,
 }from "@heroicons/react/outline"
-import {signIn, signOut, useSession} from "next-auth/client";
+import {signIn, signOut, useSession} from "next-auth/react";
 import {useRouter} from "next/router";
 import { useSelector } from "react-redux";
 import { selectItems } from "../slices/basketSlice";
 
 function Header() {
     const items = useSelector(selectItems)
-    const [session]=useSession();
+    const { data: session} = useSession()
     const router =useRouter()
     return (
         <header>
@@ -39,7 +39,7 @@ function Header() {
                         </p>
                         <p className="font-extrabold">Account & lists</p>
                     </div>
-                    <div className="link">
+                    <div onClick={()=>session && router.push('/orders')} className="link">
                         <p>Returns</p>
                         <p className="font-extrabold">& Orders</p>
                     </div>

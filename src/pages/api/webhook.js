@@ -1,24 +1,26 @@
-import { buffer } from 'micro';
-import * as admin from 'firebase-admin';
+import  {buffer} from 'micro';
+import * as admin from "firebase-admin";
+
 
 //Secure a connection to FIREBASE from the backend
 const serviceAccount = require('../../../permissions.json');
 
+const app = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+}) 
 
 //Establish connection to stripe
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
-const app = !admin.app.length ? admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-}) : admin.app();
+
 
 const  fullfillOrder = async (session) =>{
     //console.log('Fulfilling order ',session);
     return app.firestore()
-              .collection('users')
+              .collection("users")
               .doc(session.metadata.email)
-              .collection('orders')
+              .collection("orders")
               .doc(session.id)
               .set({
                   amount : session.amount_total / 100,
@@ -46,12 +48,11 @@ export default async (req,res) => {
             console.log('ERROR',error.message);
             return res.status(400,`webhook error: ${error.message}`)
         }
-
         //Handle checkout.session.completed
         if(event.type === 'checkout.session.completed'){
             const session = event.data.object;
-
             //Fulfill the order... means saving to firebase
+            console.log(`USING FULLFILLORDER FUNCTION ${fullfillOrder(session)}`);
             return fullfillOrder(session)
             .then(()=>res.status(200))
             .catch((err)=>res.status(400).send(`Webhook Error: ${err.message} `));
