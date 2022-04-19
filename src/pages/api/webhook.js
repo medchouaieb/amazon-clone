@@ -52,7 +52,6 @@ export default async (req,res) => {
         if(event.type === 'checkout.session.completed'){
             const session = event.data.object;
             //Fulfill the order... means saving to firebase
-            console.log(`USING FULLFILLORDER FUNCTION ${fullfillOrder(session)}`);
             return fullfillOrder(session)
             .then(()=>res.status(200))
             .catch((err)=>res.status(400).send(`Webhook Error: ${err.message} `));
